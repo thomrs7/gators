@@ -41,7 +41,19 @@ summary <- mutate(summary,
                   V4 = gsub('Â','',V4),
                   V5 = gsub('Â','',V5)
                   )
-    
+
+summary.duration <- filter(summary, V3 == "UF      " | V3 == "NMSU    ")
+
+
+time_to_score <- ddply(summary.duration, c('V2','V3'), summarise,
+                    minutes = strsplit(V2,c(":"))[[1]][1],
+                    seconds = strsplit(V2,c(":"))[[1]][2]
+                
+)
+
+time_to_score
+
+
 
 
 
