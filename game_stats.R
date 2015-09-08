@@ -46,14 +46,21 @@ summary.duration <- filter(summary, V3 == "UF      " | V3 == "NMSU    ")
 
 
 time_to_score <- ddply(summary.duration, c('V2','V3'), summarise,
-                    minutes = strsplit(V2,c(":"))[[1]][1],
-                    seconds = strsplit(V2,c(":"))[[1]][2]
+                    minutes = as.numeric(strsplit(V2,c(":"))[[1]][1]),
+                    seconds = as.numeric(strsplit(V2,c(":"))[[1]][2])
                 
 )
 
+time_to_score <- ddply(time_to_score , c('V3'), summarise,
+                       minutes = sum(minutes),
+                       seconds = sum(seconds),
+                       count = length(V3)
+)
+
+time_to_score <- ddply(time_to_score , c('V3'), summarise,
+                       avg = as.duration(minutes(minutes) +seconds(seconds)  ) / count
+)
+
 time_to_score
-
-
-
 
 
