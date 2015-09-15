@@ -11,8 +11,10 @@ tables = readHTMLTable("http://www.gatorzone.com/football/bios.php")
 names(tables)
 roster <- tables[[1]]
 
-doc <- 'http://www.gatorzone.com/football/boxlist.php?boxfile=20150905193000'
-raw_data <- readHTMLTable(doc)
+New_Mexico <- 'http://www.gatorzone.com/football/boxlist.php?boxfile=20150905193000'
+East_Carolina <- 'http://www.gatorzone.com/football/boxlist.php?boxfile=20150912190000'
+
+raw_data <- readHTMLTable(East_Carolina)
 score <- raw_data[[3]]
 summary <- raw_data[[4]]
 team <- raw_data[[7]]
