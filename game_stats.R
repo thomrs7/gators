@@ -7,6 +7,12 @@ library(reshape)
 library(XML)
 library(rvest)
 
+
+get_time <- function( t ){
+    return t
+    
+}
+
 tables = readHTMLTable("http://www.gatorzone.com/football/bios.php")
 names(tables)
 roster <- tables[[1]]
@@ -64,5 +70,7 @@ time_to_score <- ddply(time_to_score , c('V3'), summarise,
 )
 
 time_to_score
+
+
 
 
