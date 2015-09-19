@@ -9,7 +9,7 @@ library(rvest)
 
 
 get_time <- function( t ){
-    return t
+    return(t)
     
 }
 
