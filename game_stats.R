@@ -19,28 +19,40 @@ roster <- tables[[1]]
 
 New_Mexico <- 'http://www.gatorzone.com/football/boxlist.php?boxfile=20150905193000'
 East_Carolina <- 'http://www.gatorzone.com/football/boxlist.php?boxfile=20150912190000'
+Tennessee <- 'http://www.gatorzone.com/football/boxlist.php?boxfile=20150926153000'
 
-raw_data <- readHTMLTable(East_Carolina)
+raw_data <- readHTMLTable(Tennessee)
 score <- raw_data[[3]]
 summary <- raw_data[[4]]
 team <- raw_data[[7]]
 plays <- raw_data[[46]]
 
-table  <- getNodeSet(htmlParse(doc),"//table") [[28]]  
+table  <- getNodeSet(htmlParse(Tennessee),"//table") [[28]]  
 drives <- readHTMLTable(table,trim = TRUE, stringsAsFactors = FALSE,
                     skip.rows=c(1),header=TRUE
                     )
 
 drives <- data.frame(lapply(drives, function(x) gsub('Â','',x) ))
 names(drives) <- gsub('Â','',names(drives))
-drives$TOP <- as.duration(drives$TOP)
+drives$TOP <- as.character(drives$TOP)
 
-ggplot(drives, aes(Team,TOP)) + geom_boxplot( aes(fill=Team)) + 
+drives.time <- ddply(drives, c('Team','TOP','How.Lost','Qtr'), summarise,
+                       minutes = as.numeric(strsplit(TOP,c(":"))[[1]][1]),
+                       seconds = as.numeric(strsplit(TOP,c(":"))[[1]][2])
+)
+
+drives.time  <- ddply(drives.time  , c('Team','TOP','How.Lost','Qtr'), summarise,
+                       TOP = as.duration(minutes(minutes) +seconds(seconds)  ) 
+)
+
+
+
+ggplot(drives.time, aes(Team,TOP)) + geom_boxplot( aes(fill=Team)) + 
     geom_jitter( aes(shape=How.Lost), size=4, color='#FF4A00') +
     scale_fill_manual(values = c("#990000","#0021A5")) +
     scale_shape_manual(values = c(0,1,2,3,4,5,11)) + 
-    facet_wrap(~ Qtr,  ncol = 2) + ylab("Time of Position")
-    ggtitle("New Mexico State vs Florida (Sep 05, 2015)") 
+    facet_wrap(~ Qtr,  ncol = 2) + ylab("Time of Position") +
+    ggtitle("Tennesseevs Florida (Sep 27, 2015)") 
 
 summary <- mutate(summary,
                   V1 = gsub('Â','',V1),
@@ -50,7 +62,7 @@ summary <- mutate(summary,
                   V5 = gsub('Â','',V5)
                   )
 
-summary.duration <- filter(summary, V3 == "UF      " | V3 == "NMSU    ")
+summary.duration <- filter(summary, V3 == "UF      " | V3 == "Tenn    ")
 
 
 time_to_score <- ddply(summary.duration, c('V2','V3'), summarise,
